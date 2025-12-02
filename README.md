@@ -1,5 +1,5 @@
 # Teste FullStack
-Este repositório contém o desafio técnico para a vaga de FullStack na Doity.
+Este repositório contém o desafio técnico para a vaga de FullStack.
 
 ## 🎯 Objetivo  
 Implementar o desafio FullStack utilizando o stack exigido, com foco em fidelidade ao UX e comportamento funcional.
