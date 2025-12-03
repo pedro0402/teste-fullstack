@@ -56,8 +56,6 @@ class ServicosController extends AppController {
 			}
 		}
 
-		debug($this->Servico); 
-
 		$prestadores = $this->Servico->Prestador->find('list');
 		$this->set(compact('prestadores'));
 	}
