@@ -36,6 +36,8 @@
 		echo $this->Html->script('https://code.jquery.com/ui/1.12.1/jquery-ui.min.js');
 		echo $this->Html->script('https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.js');
 
+		echo $this->Html->script('form_prestador');
+
 		// Espaço para scripts específicos da página
 		echo $this->fetch('script'); 
 	?>
