@@ -88,6 +88,10 @@ class AgendamentosController extends AppController {
 		} else {
 			$options = array('conditions' => array('Agendamento.' . $this->Agendamento->primaryKey => $id));
 			$this->request->data = $this->Agendamento->find('first', $options);
+			$dataHoraDoBanco = $this->request->data['Agendamento']['data_hora_inicio'];
+			if (!empty($dataHoraDoBanco)) {
+				$this->request->data['Agendamento']['data_hora_inicio'] = date('d/m/Y H:i', strtotime($dataHoraDoBanco));
+			}
 		}
 		$prestadores = $this->Agendamento->Prestador->find('list');
 		$servicos = $this->Agendamento->Servico->find('list');
