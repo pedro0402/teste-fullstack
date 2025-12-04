@@ -10,7 +10,7 @@
 		echo $this->Form->input('data_hora_fim');
 		echo $this->Form->input('nome_cliente');
 		echo $this->Form->input('telefone_cliente');
-		echo $this->Form->input('status');
+		echo $this->Form->input('status', array('options' => $optionsStatus, 'empty' => 'Selecione um status'));
 		echo $this->Form->input('observacoes');
 	?>
 	</fieldset>

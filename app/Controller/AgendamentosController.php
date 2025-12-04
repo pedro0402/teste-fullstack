@@ -57,7 +57,14 @@ class AgendamentosController extends AppController {
 		}
 		$prestadores = $this->Agendamento->Prestador->find('list');
 		$servicos = $this->Agendamento->Servico->find('list');
-		$this->set(compact('prestadores', 'servicos'));
+
+		$optionsStatus = array(
+			'Agendado' => 'Agendado',
+			'Confirmado' => 'Confirmado',
+			'Concluído' => 'Concluído',
+			'Cancelado' => 'Cancelado'
+		);
+		$this->set(compact('prestadores', 'servicos', 'optionsStatus'));
 	}
 
 /**
@@ -84,7 +91,15 @@ class AgendamentosController extends AppController {
 		}
 		$prestadores = $this->Agendamento->Prestador->find('list');
 		$servicos = $this->Agendamento->Servico->find('list');
-		$this->set(compact('prestadores', 'servicos'));
+		
+		$optionsStatus = array(
+			'Agendado' => 'Agendado',
+			'Confirmado' => 'Confirmado',
+			'Concluído' => 'Concluído',
+			'Cancelado' => 'Cancelado'
+		);
+
+		$this->set(compact('prestadores', 'servicos', 'optionsStatus'));
 	}
 
 /**
