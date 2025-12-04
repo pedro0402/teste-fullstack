@@ -5,13 +5,14 @@ App::uses('AppModel', 'Model');
  *
  * @property Servico $Servico
  */
-class Prestador extends AppModel {
-	
-/**
- * Validation rules
- *
- * @var array
- */
+class Prestador extends AppModel
+{
+
+	/**
+	 * Validation rules
+	 *
+	 * @var array
+	 */
 	public $validate = array(
 		'nome' => array(
 			'notBlank' => array(
@@ -23,15 +24,23 @@ class Prestador extends AppModel {
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
 		),
+		'email' => array(
+			'rule' => array('email', true),
+			'message' => 'Por favor, forneça um endereço de email válido.'
+		),
+		'isUnique' => array(
+			'rule' => 'isUnique',
+			'message' => 'Esse e-mail já está em uso.'
+		)
 	);
 
 	// The Associations below have been created with all possible keys, those that are not needed can be removed
 
-/**
- * hasAndBelongsToMany associations
- *
- * @var array
- */
+	/**
+	 * hasAndBelongsToMany associations
+	 *
+	 * @var array
+	 */
 	public $hasAndBelongsToMany = array(
 		'Servico' => array(
 			'className' => 'Servico',
@@ -47,4 +56,11 @@ class Prestador extends AppModel {
 		)
 	);
 
+	public $hasMany = array(
+		'Agendamento' => array(
+			'className' => 'Agendamento',
+			'foreignKey' => 'prestador_id',
+			'dependent' => false 
+		)
+	);
 }
