@@ -4,13 +4,13 @@ App::uses('AppModel', 'Model');
  * Prestador Model
  *
  * @property Servico $Servico
+ * @property Agendamento $Agendamento
  */
 class Prestador extends AppModel
 {
 
 	/**
 	 * Validation rules
-	 *
 	 * @var array
 	 */
 	public $validate = array(
@@ -18,49 +18,50 @@ class Prestador extends AppModel
 			'notBlank' => array(
 				'rule' => array('notBlank'),
 				'message' => 'O campo nome é obrigatório',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
 		),
 		'email' => array(
-			'rule' => array('email', true),
-			'message' => 'Por favor, forneça um endereço de email válido.'
+			'email' => array(
+				'rule' => array('email', true),
+				'message' => 'Tipo de e-mail inválido.'
+			),
+			'isUnique' => array(
+				'rule' => 'isUnique',
+				'message' => 'Esse e-mail já está em uso.'
+			)
 		),
-		'isUnique' => array(
-			'rule' => 'isUnique',
-			'message' => 'Esse e-mail já está em uso.'
-		)
+		'valor_servico' => array(
+			'decimal' => array(
+				'rule' => array('decimal', 2), 
+				'message' => 'Por favor, insira um valor válido (ex: 150,50).',
+				'allowEmpty' => false,
+			),
+		),
 	);
-
-	// The Associations below have been created with all possible keys, those that are not needed can be removed
 
 	/**
-	 * hasAndBelongsToMany associations
-	 *
+	 * belongsTo associations
+	 * UM Prestador agora PERTENCE A UM Serviço.
 	 * @var array
 	 */
-	public $hasAndBelongsToMany = array(
+	public $belongsTo = array(
 		'Servico' => array(
 			'className' => 'Servico',
-			'joinTable' => 'prestadores_servicos',
-			'foreignKey' => 'prestador_id',
-			'associationForeignKey' => 'servico_id',
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'finderQuery' => '',
+			'foreignKey' => 'servico_id',
 		)
 	);
 
+
+	/**
+	 * hasMany associations
+	 * (Esta associação com Agendamento permanece igual)
+	 * @var array
+	 */
 	public $hasMany = array(
 		'Agendamento' => array(
 			'className' => 'Agendamento',
 			'foreignKey' => 'prestador_id',
-			'dependent' => false 
+			'dependent' => false
 		)
 	);
 }

@@ -125,3 +125,4 @@ Inflector::rules('plural', array(
         'servico' => 'servicos'
     )
 ));
+CakePlugin::load('Migrations');
