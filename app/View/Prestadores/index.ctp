@@ -15,17 +15,11 @@
         </div>
     </div>
 
-    <!-- ================================================================== -->
-    <!-- ### INÍCIO DA ATUALIZAÇÃO ### -->
-    <!-- A caixa de busca agora tem o ícone 'X' de limpar integrado. -->
-    <!-- ================================================================== -->
     <div class="search-box">
         <?php
         echo $this->Form->create('Prestador', array('url' => array('action' => 'index'), 'type' => 'get', 'novalidate' => true));
         ?>
-        <!-- Ícone da Lupa com sua própria classe -->
         <i class="fas fa-search search-icon"></i>
-
         <?php
         echo $this->Form->input('search', array(
             'label' => false,
@@ -36,14 +30,12 @@
             'autocomplete' => 'off'
         ));
         ?>
-
-        <!-- Ícone 'X' com sua própria classe -->
         <?php echo $this->Html->link(
             '<i class="fas fa-times"></i>',
             array('action' => 'index'),
             array(
                 'id' => 'clearSearchBtn',
-                'class' => 'clear-search-btn', // A classe que vamos usar no CSS
+                'class' => 'clear-search-btn',
                 'escape' => false,
                 'title' => 'Limpar busca'
             )
@@ -51,15 +43,8 @@
         <?php echo $this->Form->end(); ?>
     </div>
 
-    <!-- O bloco 'search-feedback' antigo foi removido. -->
-
-    <!-- ================================================================== -->
-    <!-- ### FIM DA ATUALIZAÇÃO ### -->
-    <!-- ================================================================== -->
-
     <div class="table-wrapper">
         <table>
-            <!-- O cabeçalho da sua tabela continua o mesmo -->
             <thead>
                 <tr>
                     <th>Prestador</th>
@@ -70,7 +55,6 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- O loop e o corpo da tabela continuam os mesmos -->
                 <?php foreach ($prestadores as $prestador): ?>
                     <tr>
                         <td>
@@ -100,7 +84,8 @@
                             }
                             ?>
                         </td>
-                        <td class="text-right">
+
+                        <td class="valor-coluna">
                             <?php
                             if (!empty($prestador['Servico']['nome'])) {
                                 echo 'R$ ' . number_format($prestador['Prestador']['valor_servico'], 2, ',', '.');
@@ -122,7 +107,6 @@
     </div>
 
     <div class="pagination">
-        <!-- A paginação continua a mesma -->
         <div class="pagination-info">
             <?php echo $this->Paginator->counter('Página {:page} de {:pages}, mostrando {:current} registros de um total de {:count}'); ?>
         </div>
@@ -135,34 +119,17 @@
     </div>
 </div>
 
-<!-- ================================================================== -->
-<!-- ### INÍCIO DA ADIÇÃO ### -->
-<!-- Script para controlar a visibilidade do botão 'X'. -->
-<!-- ================================================================== -->
 <?php
 $this->Html->scriptBlock("
     document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.getElementById('searchInput');
         const clearBtn = document.getElementById('clearSearchBtn');
-
-        if (!searchInput || !clearBtn) return; // Garante que os elementos existam
-
+        if (!searchInput || !clearBtn) return;
         function toggleClearButton() {
-            if (searchInput.value.length > 0) {
-                clearBtn.style.display = 'block';
-            } else {
-                clearBtn.style.display = 'none';
-            }
+            clearBtn.style.display = (searchInput.value.length > 0) ? 'block' : 'none';
         }
-
-        // Verifica no carregamento da página
         toggleClearButton();
-
-        // Verifica a cada vez que o usuário digita
         searchInput.addEventListener('input', toggleClearButton);
     });
 ", array('inline' => false));
 ?>
-<!-- ================================================================== -->
-<!-- ### FIM DA ADIÇÃO ### -->
-<!-- ================================================================== -->
