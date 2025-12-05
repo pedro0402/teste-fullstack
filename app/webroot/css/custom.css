@@ -19,70 +19,13 @@ h1 {
     margin-bottom: 30px;
 }
 
-/* Container principal - usado em todas as páginas */
+/* Container principal */
 .container {
     margin: 0 auto;
     background: white;
     border-radius: 8px;
     padding: 30px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Estilos para a nova lista de serviços com valor */
-.service-list-container {
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    overflow: hidden;
-    /* Garante que os cantos arredondados sejam aplicados nos itens internos */
-}
-
-.service-item-wrapper {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 15px;
-    border-bottom: 1px solid #eee;
-    transition: background-color 0.2s;
-}
-
-.service-item-wrapper:last-child {
-    border-bottom: none;
-}
-
-.service-item-wrapper:hover {
-    background-color: #f9f9f9;
-}
-
-/* Estiliza o label do checkbox para ocupar mais espaço e ser clicável */
-.service-checkbox-item label {
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    width: 100%;
-}
-
-.service-checkbox-item input[type="checkbox"] {
-    width: 1.2em;
-    height: 1.2em;
-    margin-right: 12px;
-}
-
-.service-value-input {
-    display: flex;
-    align-items: center;
-}
-
-.service-value-input .currency-symbol {
-    margin-right: 8px;
-    color: #666;
-    font-weight: 500;
-}
-
-.service-value-input .price-input {
-    width: 110px;
-    text-align: right;
-    padding-right: 10px;
 }
 
 /* Ajuste para o container do formulário ser mais estreito */
@@ -111,23 +54,7 @@ h1 {
     gap: 8px;
     transition: all 0.2s;
     text-decoration: none;
-    /* Para links que parecem botões */
     color: white;
-}
-
-.avatar:has(img) {
-    /* ...remove qualquer cor de fundo. */
-    background-color: transparent !important;
-}
-
-/* Garante que a imagem dentro do avatar se comporte perfeitamente. */
-.avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    /* Garante que a imagem cubra o espaço, sem distorcer. */
-    border-radius: 50%;
-    /* Mantém a imagem redonda como o avatar. */
 }
 
 
@@ -167,12 +94,61 @@ h1 {
     background: #dc2626;
 }
 
+/* ==========================================================================
+   Estilos da Caixa de Busca (VERSÃO CORRIGIDA)
+   ========================================================================== */
 .search-box {
     position: relative;
+    /* A PROPRIEDADE MAIS IMPORTANTE! Torna este div a referência. */
     margin-bottom: 20px;
+    max-width: 350px;
 }
 
-/* ... (demais estilos da tabela, paginação, etc.) ... */
+/* Ajusta o padding para dar espaço para o ícone da lupa (esquerda) e o 'X' (direita) */
+.search-box input {
+    width: 100%;
+    padding: 10px 40px 10px 40px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
+/* Posiciona o ícone de LUPA à esquerda */
+.search-box .search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+    pointer-events: none;
+    /* Garante que não atrapalhe o clique no input */
+}
+
+/* Posiciona o botão 'X' de limpar à direita */
+.search-box .clear-search-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #aaa;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 5px;
+    display: none;
+    /* Começa escondido por padrão */
+}
+
+.search-box .clear-search-btn:hover {
+    color: #333;
+}
+
 .table-wrapper {
     overflow-x: auto;
 }
@@ -197,6 +173,7 @@ th {
 
 td {
     padding: 16px 12px;
+    vertical-align: middle;
     border-bottom: 1px solid #f0f0f0;
     font-size: 14px;
     color: #333;
@@ -223,6 +200,10 @@ tbody tr:hover {
     font-size: 14px;
     color: white;
     flex-shrink: 0;
+}
+
+.avatar:has(img) {
+    background-color: transparent !important;
 }
 
 .avatar img {
@@ -268,6 +249,11 @@ tbody tr:hover {
 
 .action-btn.delete:hover {
     color: #ef4444;
+}
+
+.text-right {
+    text-align: right;
+    padding-right: 15px;
 }
 
 .pagination {
@@ -372,6 +358,23 @@ tbody tr:hover {
     padding-left: 38px;
 }
 
+.currency-input {
+    position: relative;
+}
+
+.currency-input .currency-symbol {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+}
+
+.currency-input .form-control {
+    padding-left: 40px;
+    text-align: right;
+}
+
 /* Estilos de Upload */
 .upload-area {
     display: flex;
@@ -398,8 +401,7 @@ tbody tr:hover {
 }
 
 .avatar-placeholder {
-    width: 50px;
-    height: 50px;
+    font-size: 36px;
     color: #ccc;
 }
 
@@ -411,6 +413,7 @@ tbody tr:hover {
     text-align: center;
     cursor: pointer;
     transition: all 0.2s;
+    position: relative;
 }
 
 .upload-box:hover {
@@ -432,7 +435,7 @@ tbody tr:hover {
 
 .upload-text span {
     color: #3b82f6;
-    text-decoration: underline;
+    font-weight: 500;
 }
 
 .upload-hint {
@@ -441,33 +444,14 @@ tbody tr:hover {
 }
 
 .file-input {
-    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
 }
-
-
-/* Estilos para checkboxes (HABTM de Serviços) */
-.checkbox-group .input.select {
-    display: flex;
-    flex-direction: column;
-}
-
-.checkbox-group .checkbox {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.checkbox-group .checkbox input {
-    margin-right: 10px;
-    width: 16px;
-    height: 16px;
-}
-
-.checkbox-group .checkbox label {
-    margin-bottom: 0;
-    font-weight: normal;
-}
-
 
 /* Ações do Formulário */
 .form-actions {

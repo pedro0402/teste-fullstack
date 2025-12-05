@@ -3,17 +3,45 @@ App::uses('AppController', 'Controller');
 
 class PrestadoresController extends AppController
 {
-
     public $components = array('Paginator', 'Flash');
 
     public function index()
     {
+        // Define as configurações padrão da Paginação.
+        // O 'contain' é crucial para podermos buscar no nome do Serviço.
         $this->Paginator->settings = array(
             'contain' => array('Servico'),
             'limit' => 10
         );
-        $prestadores = $this->Paginator->paginate();
 
+        // --- INÍCIO DA ATUALIZAÇÃO ---
+        // Prepara um array para as condições da busca.
+        $conditions = array();
+        
+        // Verifica se um termo de busca foi enviado pela URL (via GET).
+        if (!empty($this->request->query['search'])) {
+            $searchTerm = '%' . $this->request->query['search'] . '%';
+            
+            // Monta a condição OR: busca no nome do prestador, no email OU no nome do serviço.
+            $conditions['OR'] = array(
+                'Prestador.nome LIKE' => $searchTerm,
+                'Prestador.email LIKE' => $searchTerm,
+                'Servico.nome LIKE' => $searchTerm,
+            );
+            
+            // Passa o termo de busca para a view (para a mensagem "Resultados para...")
+            $this->set('searchTerm', $this->request->query['search']);
+
+            // Informa ao Paginator para manter o parâmetro de busca nos links de paginação.
+            $this->request->params['named']['search'] = $this->request->query['search'];
+        }
+
+        // Passa as condições (se existirem) para o método paginate. É aqui que a filtragem acontece.
+        $prestadores = $this->Paginator->paginate($conditions);
+        // --- FIM DA ATUALIZAÇÃO ---
+
+
+        // O resto do seu código para avatares e fotos continua o mesmo.
         $coresAvatar = array('#8B5CF6', '#EC4899', '#10B981', '#F59E0B', '#3B82F6', '#EF4444');
 
         foreach ($prestadores as $key => $prestador) {
@@ -31,6 +59,11 @@ class PrestadoresController extends AppController
         }
         $this->set('prestadores', $prestadores);
     }
+
+    // ==================================================================
+    // AS FUNÇÕES ABAIXO (add, edit, delete, _handleFileUpload)
+    // CONTINUAM EXATAMENTE IGUAIS, SEM NENHUMA ALTERAÇÃO.
+    // ==================================================================
 
     public function add()
     {
