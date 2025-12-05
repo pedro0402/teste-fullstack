@@ -7,6 +7,9 @@
             <p>Gerencie seus prestadores de serviço</p>
         </div>
         <div class="header-right">
+            <button type="button" id="openImportModalBtn" class="btn btn-secondary">
+                <i class="fas fa-upload"></i> Importar
+            </button>
             <?php echo $this->Html->link(
                 '<i class="fas fa-plus"></i> Add novo prestador',
                 array('controller' => 'prestadores', 'action' => 'add'),
@@ -16,30 +19,10 @@
     </div>
 
     <div class="search-box">
-        <?php
-        echo $this->Form->create('Prestador', array('url' => array('action' => 'index'), 'type' => 'get', 'novalidate' => true));
-        ?>
+        <?php echo $this->Form->create('Prestador', array('url' => array('action' => 'index'), 'type' => 'get', 'novalidate' => true)); ?>
         <i class="fas fa-search search-icon"></i>
-        <?php
-        echo $this->Form->input('search', array(
-            'label' => false,
-            'div' => false,
-            'placeholder' => 'Buscar...',
-            'id' => 'searchInput',
-            'value' => isset($this->request->query['search']) ? h($this->request->query['search']) : '',
-            'autocomplete' => 'off'
-        ));
-        ?>
-        <?php echo $this->Html->link(
-            '<i class="fas fa-times"></i>',
-            array('action' => 'index'),
-            array(
-                'id' => 'clearSearchBtn',
-                'class' => 'clear-search-btn',
-                'escape' => false,
-                'title' => 'Limpar busca'
-            )
-        ); ?>
+        <?php echo $this->Form->input('search', array('label' => false, 'div' => false, 'placeholder' => 'Buscar...', 'id' => 'searchInput', 'value' => isset($this->request->query['search']) ? h($this->request->query['search']) : '', 'autocomplete' => 'off')); ?>
+        <?php echo $this->Html->link('<i class="fas fa-times"></i>', array('action' => 'index'), array('id' => 'clearSearchBtn', 'class' => 'clear-search-btn', 'escape' => false, 'title' => 'Limpar busca')); ?>
         <?php echo $this->Form->end(); ?>
     </div>
 
@@ -84,7 +67,6 @@
                             }
                             ?>
                         </td>
-
                         <td class="valor-coluna">
                             <?php
                             if (!empty($prestador['Servico']['nome'])) {
@@ -111,15 +93,35 @@
             <?php echo $this->Paginator->counter('Página {:page} de {:pages}, mostrando {:current} registros de um total de {:count}'); ?>
         </div>
         <div class="pagination-buttons">
-            <?php
-            echo $this->Paginator->prev('Anterior', array('tag' => 'button'), null, array('class' => 'prev disabled', 'tag' => 'button'));
-            echo $this->Paginator->next('Próximo', array('tag' => 'button'), null, array('class' => 'next disabled', 'tag' => 'button'));
-            ?>
+            <?php echo $this->Paginator->prev('Anterior', array('tag' => 'button'), null, array('class' => 'prev disabled', 'tag' => 'button')); ?>
+            <?php echo $this->Paginator->next('Próximo', array('tag' => 'button'), null, array('class' => 'next disabled', 'tag' => 'button')); ?>
         </div>
     </div>
 </div>
 
+<div id="importModal" class="modal-overlay">
+    <div class="modal-container">
+        <h2 class="modal-title">Faça o upload da sua lista de prestadores</h2>
+        <?php echo $this->Form->create('Prestador', ['id' => 'importForm', 'type' => 'file', 'url' => ['action' => 'importar_xls']]); ?>
+        <div class="upload-area" id="uploadArea">
+            <i class="fas fa-cloud-arrow-up upload-icon"></i>
+            <div class="upload-text"><span>Clique para enviar</span> ou arraste e solte</div>
+            <div class="upload-hint">XLS, XLSX (max. 25 MB)</div>
+            <?php echo $this->Form->input('arquivo', ['type' => 'file', 'label' => false, 'div' => false, 'class' => 'file-input', 'id' => 'fileInput', 'accept' => '.xls,.xlsx']); ?>
+        </div>
+        <div class="file-preview" id="filePreview"></div>
+        <div id="import-feedback" style="display: none;"></div>
+        <div class="modal-form-actions">
+            <button type="button" class="btn btn-cancel" id="cancelImportBtn">Cancelar</button>
+            <button type="submit" class="btn btn-save" id="submitImportBtn" disabled>Adicionar</button>
+        </div>
+        <?php echo $this->Form->end(); ?>
+    </div>
+</div>
+
 <?php
+echo $this->Html->script('https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js');
+
 $this->Html->scriptBlock("
     document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.getElementById('searchInput');
@@ -132,4 +134,112 @@ $this->Html->scriptBlock("
         searchInput.addEventListener('input', toggleClearButton);
     });
 ", array('inline' => false));
+
+$this->Html->scriptBlock("
+$(document).ready(function() {
+    // ===============================================
+    // ### A CORREÇÃO SIMPLES ESTÁ AQUI ###
+    // Este `if` garante que este script SÓ vai rodar se o botão de importação existir.
+    // Assim, ele não interfere com a página de 'adicionar'.
+    // ===============================================
+    if ($('#openImportModalBtn').length === 0) {
+        return;
+    }
+
+    const modal = $('#importModal');
+    const openBtn = $('#openImportModalBtn');
+    const cancelBtn = $('#cancelImportBtn');
+    const submitBtn = $('#submitImportBtn');
+    const uploadArea = $('#uploadArea');
+    const fileInput = $('#fileInput');
+    const filePreview = $('#filePreview');
+    const feedbackDiv = $('#import-feedback');
+    let selectedFile = null;
+
+    openBtn.click(function() {
+        modal.css('display', 'flex').hide().fadeIn(200);
+    });
+
+    cancelBtn.click(resetAndCloseModal);
+    modal.click(e => { if ($(e.target).is(modal)) resetAndCloseModal(); });
+
+    function resetAndCloseModal() {
+        removeFile();
+        feedbackDiv.empty().hide();
+        modal.fadeOut(200);
+    }
+
+    uploadArea.click(() => fileInput.click());
+    fileInput.change(e => processFile(e.target.files[0]));
+    uploadArea.on('dragover', e => { e.preventDefault(); uploadArea.addClass('drag-over'); });
+    uploadArea.on('dragleave', e => { e.preventDefault(); uploadArea.removeClass('drag-over'); });
+    uploadArea.on('drop', e => {
+        e.preventDefault();
+        uploadArea.removeClass('drag-over');
+        processFile(e.originalEvent.dataTransfer.files[0]);
+    });
+
+    function processFile(file) {
+        if (!file) return;
+        selectedFile = file;
+        
+        filePreview.html(
+            `<div class='file-info'>
+                <div class='file-details'>
+                    <div class='file-icon'><i class='fas fa-file-excel'></i></div>
+                    <div class='file-meta'>
+                        <div class='file-name'>\${file.name}</div>
+                        <div class='file-size'>\${(file.size / 1024).toFixed(1)} KB</div>
+                    </div>
+                </div>
+                <button type='button' class='remove-file' id='removeFileBtn'><i class='fas fa-xmark'></i></button>
+            </div>`
+        ).addClass('show');
+        
+        submitBtn.prop('disabled', false);
+        feedbackDiv.empty().hide();
+    }
+    
+    function removeFile() {
+        selectedFile = null;
+        fileInput.val('');
+        filePreview.removeClass('show').empty();
+        submitBtn.prop('disabled', true);
+    }
+
+    filePreview.on('click', '#removeFileBtn', removeFile);
+
+    $('#importForm').submit(function(e) {
+        e.preventDefault();
+        if (!selectedFile) return;
+
+        const formData = new FormData(this);
+        submitBtn.prop('disabled', true).text('Importando...');
+
+        $.ajax({
+            url: $(this).attr('action'),
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            dataType: 'json',
+            success: function(response) {
+                if(response.success) {
+                    feedbackDiv.html(`<div class='success-message'>\${response.message}</div>`).show();
+                    setTimeout(() => window.location.reload(), 2000);
+                } else {
+                     feedbackDiv.html(`<div class='error-message'>\${response.message}</div>`).show();
+                }
+            },
+            error: function(jqXHR) {
+                const errorMsg = jqXHR.responseJSON ? jqXHR.responseJSON.message : 'Erro no servidor. Verifique o console do navegador.';
+                feedbackDiv.html(`<div class='error-message'>\${errorMsg}</div>`).show();
+            },
+            complete: function() {
+                submitBtn.prop('disabled', false).text('Adicionar');
+            }
+        });
+    });
+});
+", ['inline' => false]);
 ?>

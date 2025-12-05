@@ -33,7 +33,6 @@ h1 {
     max-width: 1200px;
 }
 
-
 .btn {
     padding: 10px 20px;
     border: none;
@@ -49,7 +48,6 @@ h1 {
     color: white;
     font-weight: 500;
 }
-
 
 .header {
     display: flex;
@@ -83,7 +81,6 @@ h1 {
     background: #dc2626;
 }
 
-/* ... Estilos da Tabela e Paginação (sem alterações) ... */
 .search-box { position: relative; margin-bottom: 20px; max-width: 350px; }
 .search-box input { width: 100%; padding: 10px 40px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; transition: border-color 0.2s; }
 .search-box input:focus { outline: none; border-color: #3b82f6; }
@@ -115,117 +112,70 @@ tbody tr:hover { background: #fafafa; }
 .pagination-buttons button:hover:not(:disabled) { background: #f9f9f9; }
 .pagination-buttons button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-/* ========================================= */
-/* ### INÍCIO DAS ATUALIZAÇÕES DO FORMULÁRIO ### */
-/* ========================================= */
+.section { margin-bottom: 30px; }
+.section-title { font-size: 16px; font-weight: 600; color: #333; margin-bottom: 5px; }
+.section-subtitle { font-size: 14px; color: #666; margin-bottom: 20px; }
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; font-size: 14px; font-weight: 500; color: #333; margin-bottom: 8px; }
+.form-group .error-message { padding-top: 5px; font-size: 13px; color: #ef4444; }
+.form-control { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; color: #333; transition: border-color 0.2s; height: 42px; }
+.form-control:focus { outline: none; border-color: #3b82f6; }
+.input-icon { position: relative; }
+.input-icon i { position: absolute; left: 12px; top: 21px; transform: translateY(-50%); color: #999; }
+.input-icon .form-control { padding-left: 38px; }
+.currency-input { position: relative; }
+.currency-input .form-control { padding-left: 10px; text-align: left; }
+.currency-input .form-control::placeholder { text-align: left; color: #aaa; }
+.form-group-with-button { display: flex; align-items: flex-end; gap: 15px; }
+.form-group-with-button .form-group { flex-grow: 1; margin-bottom: 0; }
+.form-group-with-button .btn { flex-shrink: 0; }
 
-.section {
-    margin-bottom: 30px;
+/* =============================================== */
+/* ### A CORREÇÃO ESTÁ AQUI ### */
+/* Esta regra é para o upload de foto do FORMULÁRIO e eu a apaguei sem querer. */
+/* =============================================== */
+.upload-area { 
+    display: flex; 
+    align-items: center; 
+    gap: 20px; 
 }
+.avatar-preview { width: 80px; height: 80px; border-radius: 50%; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
+.avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
+.avatar-placeholder { font-size: 36px; color: #ccc; }
+.upload-box { flex: 1; border: 2px dashed #ddd; border-radius: 8px; padding: 30px; text-align: center; cursor: pointer; transition: all 0.2s; position: relative; }
+.upload-box:hover { border-color: #3b82f6; background-color: #f9fafb; }
+.upload-box i { font-size: 24px; color: #999; margin-bottom: 10px; }
+.upload-box .upload-text { font-size: 14px; color: #333; margin-bottom: 5px; }
+.upload-box .upload-text span { color: #3b82f6; font-weight: 500; }
+.upload-box .upload-hint { font-size: 12px; color: #999; }
+.file-input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 
-.section-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 5px;
-}
 
-.section-subtitle {
-    font-size: 14px;
-    color: #666;
-    margin-bottom: 20px;
-}
+.form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e5e5; }
+.btn-cancel { background: white; border: 1px solid #ddd; color: #333; }
+.btn-cancel:hover { background: #f9f9f9; }
+.btn-save { background: #ef4444; color: white; }
+.btn-save:hover { background: #dc2626; }
+.btn-secondary { background: white; border: 1px solid #ddd; color: #333; }
+.btn-secondary:hover { background: #f9f9f9; }
 
-.form-group {
-    margin-bottom: 20px;
-}
+/* =============================================== */
+/* ### ESTILOS UNIVERSAIS PARA MODAIS ### */
+/* =============================================== */
 
-.form-group label {
-    display: block;
-    font-size: 14px;
-    font-weight: 500;
-    color: #333;
-    margin-bottom: 8px;
-}
-
-.form-group .error-message {
-    padding-top: 5px;
-    font-size: 13px;
-    color: #ef4444;
-}
-
-.form-control {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 14px;
-    color: #333;
-    transition: border-color 0.2s;
-    height: 42px; /* Altura padrão para alinhar com botões */
-}
-
-.form-control:focus {
-    outline: none;
-    border-color: #3b82f6;
-}
-
-.input-icon {
-    position: relative;
-}
-
-.input-icon i {
-    position: absolute;
-    left: 12px;
-    top: 21px;
-    transform: translateY(-50%);
-    color: #999;
-}
-
-.input-icon .form-control {
-    padding-left: 38px;
-}
-
-.currency-input {
-    position: relative;
-}
-
-.currency-input .form-control {
-    padding-left: 10px;
-    text-align: left;
-}
-
-.currency-input .form-control::placeholder {
-    text-align: left;
-    color: #aaa;
-}
-
-/* NOVO: Layout para Input + Botão */
-.form-group-with-button {
-    display: flex;
-    align-items: flex-end; /* Alinha na base */
-    gap: 15px;
-}
-.form-group-with-button .form-group {
-    flex-grow: 1; /* Faz o grupo do select ocupar o espaço disponível */
-    margin-bottom: 0;
-}
-.form-group-with-button .btn {
-    flex-shrink: 0; /* Impede o botão de encolher */
-}
-
-/* NOVO: Estilos do Modal */
 .modal-overlay {
-    display: none;
+    display: none; /* COMEÇA ESCONDIDO */
     position: fixed;
-    top: 0;
+    z-index: 1050;
     left: 0;
+    top: 0;
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.6);
-    z-index: 1050;
+    /* O JS muda para 'display: flex' para usar estas regras de centralização */
     align-items: center;
     justify-content: center;
+    overflow: auto;
 }
 
 .modal-container {
@@ -233,57 +183,54 @@ tbody tr:hover { background: #fafafa; }
     border-radius: 12px;
     padding: 30px;
     width: 100%;
-    max-width: 400px;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    max-width: 450px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     animation: slideIn 0.3s ease-out;
 }
+@keyframes slideIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
 
-@keyframes slideIn {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
+.modal-title { font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 25px; }
+.modal-form-actions { display: flex; gap: 12px; margin-top: 25px; }
+#modal-error-message { color: #ef4444; background-color: #fee2e2; border: 1px solid #fca5a5; border-radius: 6px; padding: 10px; margin-bottom: 15px; font-size: 14px; }
+
+
+/* =============================================== */
+/* ### ESTILOS ESPECÍFICOS: MODAL DE IMPORTAÇÃO ### */
+/* =============================================== */
+
+/* Aqui, sobrescrevemos o 'display: flex' da regra genérica de .upload-area */
+#importModal .upload-area {
+    display: block; /* Garante que o conteúdo fique empilhado */
+    border: 2px dashed #d1d5db;
+    border-radius: 12px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 20px;
+    background-color: #fafafa;
 }
-
-.modal-title {
-    font-size: 20px;
-    font-weight: 600;
-    color: #1f2937;
-    margin-bottom: 25px;
-}
-
-.modal-form-actions {
-    display: flex;
-    gap: 12px;
-    margin-top: 25px;
-}
-
-#modal-error-message {
-    color: #ef4444;
-    background-color: #fee2e2;
-    border: 1px solid #fca5a5;
-    border-radius: 6px;
-    padding: 10px;
-    margin-bottom: 15px;
-    font-size: 14px;
-}
-
-
-/* ... Estilos de Upload e Ações do Formulário ... */
-.upload-area { display: flex; align-items: center; gap: 20px; }
-.avatar-preview { width: 80px; height: 80px; border-radius: 50%; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
-.avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
-.avatar-placeholder { font-size: 36px; color: #ccc; }
-.upload-box { flex: 1; border: 2px dashed #ddd; border-radius: 8px; padding: 30px; text-align: center; cursor: pointer; transition: all 0.2s; position: relative; }
-.upload-box:hover { border-color: #3b82f6; background-color: #f9fafb; }
-.upload-box i { font-size: 24px; color: #999; margin-bottom: 10px; }
-.upload-text { font-size: 14px; color: #333; margin-bottom: 5px; }
-.upload-text span { color: #3b82f6; font-weight: 500; }
-.upload-hint { font-size: 12px; color: #999; }
-.file-input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-.form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e5e5; }
-.btn-cancel { background: white; border: 1px solid #ddd; color: #333; }
-.btn-cancel:hover { background: #f9f9f9; }
-.btn-save { background: #ef4444; color: white; }
-.btn-save:hover { background: #dc2626; }
+#importModal .upload-area:hover { border-color: #3b82f6; background-color: #f0f9ff; }
+#importModal .upload-area.drag-over { border-color: #3b82f6; background-color: #e0f2fe; }
+#importModal .upload-icon { font-size: 3rem; width: 48px; height: 48px; margin: 0 auto 15px; color: #9ca3af; }
+#importModal .upload-text { font-size: 14px; color: #1f2937; margin-bottom: 5px; }
+#importModal .upload-text span { font-weight: 600; color: #1f2937; }
+#importModal .upload-hint { font-size: 13px; color: #6b7280; }
+.file-preview { display: none; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; margin-bottom: 20px; }
+.file-preview.show { display: block; animation: fadeIn 0.3s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+.file-info { display: flex; align-items: center; justify-content: space-between; }
+.file-details { display: flex; align-items: center; gap: 12px; }
+.file-icon { width: 40px; height: 40px; background: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #10b981; font-size: 20px; }
+.file-meta { display: flex; flex-direction: column; align-items: flex-start; }
+.file-name { font-size: 14px; font-weight: 500; color: #1f2937; margin-bottom: 2px; }
+.file-size { font-size: 12px; color: #6b7280; }
+.remove-file { background: #e5e7eb; border: none; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #6b7280; transition: all 0.2s; }
+.remove-file:hover { background: #ef4444; color: white; }
+#import-feedback .success-message, #import-feedback .error-message { padding: 15px; margin-bottom: 20px; border-radius: 8px; font-size: 14px; text-align: center; }
+#import-feedback .success-message { background: #ecfdf5; border: 1px solid #86efac; color: #166534; }
+#import-feedback .error-message { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+.btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
 
 @media (max-width: 768px) {
     .container, .prestadores.form .container, .prestadores.index .container { padding: 20px; }
@@ -292,5 +239,6 @@ tbody tr:hover { background: #fafafa; }
     .btn { flex: 1; justify-content: center; }
     table { font-size: 12px; }
     .provider-info { flex-direction: column; align-items: flex-start; }
-    .upload-area { flex-direction: column; }
+    .upload-area { flex-direction: column; } /* Para o formulário, em telas pequenas */
+    #importModal .upload-area { flex-direction: normal; } /* Garante que não quebre no modal */
 }

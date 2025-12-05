@@ -1,49 +1,40 @@
 <?php
 App::uses('AppController', 'Controller');
 
+// ===============================================
+// ### INÍCIO DA ATUALIZAÇÃO (1/2) ###
+// Adicionamos a importação da biblioteca PHPExcel.
+// Esta é a forma correta do CakePHP 2 "encontrar" a biblioteca na pasta Vendor.
+// ===============================================
+App::import('Vendor', 'PHPExcel/Classes/PHPExcel');
+
 class PrestadoresController extends AppController
 {
     public $components = array('Paginator', 'Flash');
 
     public function index()
     {
-        // Define as configurações padrão da Paginação.
-        // O 'contain' é crucial para podermos buscar no nome do Serviço.
         $this->Paginator->settings = array(
             'contain' => array('Servico'),
             'limit' => 10
         );
 
-        // --- INÍCIO DA ATUALIZAÇÃO ---
-        // Prepara um array para as condições da busca.
         $conditions = array();
         
-        // Verifica se um termo de busca foi enviado pela URL (via GET).
         if (!empty($this->request->query['search'])) {
             $searchTerm = '%' . $this->request->query['search'] . '%';
-            
-            // Monta a condição OR: busca no nome do prestador, no email OU no nome do serviço.
             $conditions['OR'] = array(
                 'Prestador.nome LIKE' => $searchTerm,
                 'Prestador.email LIKE' => $searchTerm,
                 'Servico.nome LIKE' => $searchTerm,
             );
-            
-            // Passa o termo de busca para a view (para a mensagem "Resultados para...")
             $this->set('searchTerm', $this->request->query['search']);
-
-            // Informa ao Paginator para manter o parâmetro de busca nos links de paginação.
             $this->request->params['named']['search'] = $this->request->query['search'];
         }
 
-        // Passa as condições (se existirem) para o método paginate. É aqui que a filtragem acontece.
         $prestadores = $this->Paginator->paginate($conditions);
-        // --- FIM DA ATUALIZAÇÃO ---
-
-
-        // O resto do seu código para avatares e fotos continua o mesmo.
+        
         $coresAvatar = array('#8B5CF6', '#EC4899', '#10B981', '#F59E0B', '#3B82F6', '#EF4444');
-
         foreach ($prestadores as $key => $prestador) {
             $nome = explode(' ', $prestador['Prestador']['nome']);
             $iniciais = strtoupper(substr($nome[0], 0, 1) . (count($nome) > 1 ? substr(end($nome), 0, 1) : ''));
@@ -60,20 +51,13 @@ class PrestadoresController extends AppController
         $this->set('prestadores', $prestadores);
     }
 
-    // ==================================================================
-    // AS FUNÇÕES ABAIXO (add, edit, delete, _handleFileUpload)
-    // CONTINUAM EXATAMENTE IGUAIS, SEM NENHUMA ALTERAÇÃO.
-    // ==================================================================
-
     public function add()
     {
         if ($this->request->is('post')) {
             $this->request->data = $this->_handleFileUpload($this->request->data);
-
             if (isset($this->request->data['Prestador']['valor_servico'])) {
                 $this->request->data['Prestador']['valor_servico'] = str_replace(',', '.', $this->request->data['Prestador']['valor_servico']);
             }
-
             $this->Prestador->create();
             if ($this->Prestador->save($this->request->data)) {
                 $this->Flash->success(__('O prestador foi salvo com sucesso.'));
@@ -93,11 +77,9 @@ class PrestadoresController extends AppController
         }
         if ($this->request->is(array('post', 'put'))) {
             $this->request->data = $this->_handleFileUpload($this->request->data);
-
             if (isset($this->request->data['Prestador']['valor_servico'])) {
                 $this->request->data['Prestador']['valor_servico'] = str_replace(',', '.', $this->request->data['Prestador']['valor_servico']);
             }
-
             if ($this->Prestador->save($this->request->data)) {
                 $this->Flash->success(__('O prestador foi salvo com sucesso.'));
                 return $this->redirect(array('action' => 'index'));
@@ -106,7 +88,6 @@ class PrestadoresController extends AppController
             }
         } else {
             $this->request->data = $this->Prestador->findById($id);
-
             if (!empty($this->request->data['Prestador']['valor_servico'])) {
                 $this->request->data['Prestador']['valor_servico'] = number_format($this->request->data['Prestador']['valor_servico'], 2, ',', '');
             }
@@ -132,8 +113,83 @@ class PrestadoresController extends AppController
         return $this->redirect(array('action' => 'index'));
     }
 
+    // ===============================================
+    // ### INÍCIO DA ATUALIZAÇÃO (2/2) ###
+    // A nova action para processar o arquivo XLS
+    // ===============================================
+    public function importar_xls() {
+        $this->autoRender = false;
+        $this->response->type('json');
+
+        // 1. Validação inicial do arquivo
+        if (empty($this->request->data['Prestador']['arquivo']['tmp_name']) || $this->request->data['Prestador']['arquivo']['error'] !== UPLOAD_ERR_OK) {
+            $this->response->statusCode(400);
+            return json_encode(['success' => false, 'message' => 'Nenhum arquivo enviado ou erro no upload.']);
+        }
+
+        $caminhoArquivo = $this->request->data['Prestador']['arquivo']['tmp_name'];
+
+        try {
+            // 2. Carregar o arquivo XLS/XLSX com PHPExcel
+            $objPHPExcel = PHPExcel_IOFactory::load($caminhoArquivo);
+            $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
+            
+            // 3. Processar os dados da planilha
+            array_shift($sheetData); // Remove a linha do cabeçalho
+            $dadosParaSalvar = array();
+            $this->loadModel('Servico'); // Carrega o model de Serviço para consulta
+
+            foreach ($sheetData as $linha) {
+                $nomePrestador = trim($linha['A']);
+                if (empty($nomePrestador)) continue; // Pula linhas vazias
+
+                // Lógica para encontrar ou criar o serviço na hora
+                $nomeServico = trim($linha['D']);
+                $servico_id = null;
+                if (!empty($nomeServico)) {
+                    $servico = $this->Servico->findByName($nomeServico);
+                    if ($servico) {
+                        $servico_id = $servico['Servico']['id'];
+                    } else {
+                        $this->Servico->create();
+                        $this->Servico->save(['nome' => $nomeServico]);
+                        $servico_id = $this->Servico->id;
+                    }
+                }
+
+                // 4. Preparar o array para salvar no banco
+                $dadosParaSalvar[] = [
+                    'nome' => $nomePrestador,
+                    'email' => trim($linha['B']),
+                    'telefone' => trim($linha['C']),
+                    'servico_id' => $servico_id,
+                    'valor_servico' => str_replace(',', '.', trim($linha['E'])), // Converte vírgula para ponto
+                ];
+            }
+
+            // 5. Tentar salvar todos os registros de uma vez (muito mais rápido)
+            if ($this->Prestador->saveAll($dadosParaSalvar, ['validate' => true, 'atomic' => true])) {
+                $this->response->body(json_encode(['success' => true, 'message' => count($dadosParaSalvar) . ' prestadores importados com sucesso!']));
+            } else {
+                $this->response->statusCode(400);
+                $this->response->body(json_encode(['success' => false, 'message' => 'Ocorreram erros de validação ao salvar os dados. Verifique o arquivo.']));
+            }
+
+        } catch (Exception $e) {
+            $this->response->statusCode(500);
+            $this->response->body(json_encode(['success' => false, 'message' => 'Erro ao ler o arquivo: ' . $e->getMessage()]));
+        }
+
+        return $this->response;
+    }
+    // ===============================================
+    // ### FIM DA ATUALIZAÇÃO ###
+    // ===============================================
+
+
     private function _handleFileUpload($data)
     {
+        // ... (esta função permanece exatamente a mesma) ...
         if (isset($data['Prestador']['foto']['error']) && $data['Prestador']['foto']['error'] === UPLOAD_ERR_OK) {
             $uploadDir = APP . 'webroot' . DS . 'img' . DS . 'uploads' . DS . 'prestadores' . DS;
             if (!is_dir($uploadDir)) {
