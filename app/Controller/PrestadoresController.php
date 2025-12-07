@@ -51,19 +51,29 @@ class PrestadoresController extends AppController
     {
         if ($this->request->is('post')) {
             $this->request->data = $this->_handleFileUpload($this->request->data);
+
+            // Converte valor para ponto decimal
             if (isset($this->request->data['Prestador']['valor_servico'])) {
-                $this->request->data['Prestador']['valor_servico'] = str_replace(',', '.', $this->request->data['Prestador']['valor_servico']);
+                $valorServico = str_replace(',', '.', $this->request->data['Prestador']['valor_servico']);
+                $this->request->data['Prestador']['valor_servico'] = $valorServico;
+            } else {
+                $valorServico = null;
             }
+
+            if (!empty($this->request->data['Prestador']['servico_id']) && $valorServico !== null && is_numeric($valorServico)) {
+                $servicoId = $this->request->data['Prestador']['servico_id'];
+                $this->Prestador->Servico->id = $servicoId;
+                $this->Prestador->Servico->saveField('valor', $valorServico);
+            }
+
             $this->Prestador->create();
             if ($this->Prestador->save($this->request->data)) {
                 return $this->redirect(array('action' => 'index'));
-            } else {
             }
         }
         $servicos = $this->Prestador->Servico->find('list');
         $this->set(compact('servicos'));
     }
-
     public function edit($id = null)
     {
         if (!$this->Prestador->exists($id)) {
