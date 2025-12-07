@@ -16,7 +16,7 @@ class PrestadoresController extends AppController
         );
 
         $conditions = array();
-        
+
         if (!empty($this->request->query['search'])) {
             $searchTerm = '%' . $this->request->query['search'] . '%';
             $conditions['OR'] = array(
@@ -29,7 +29,7 @@ class PrestadoresController extends AppController
         }
 
         $prestadores = $this->Paginator->paginate($conditions);
-        
+
         $coresAvatar = array('#8B5CF6', '#EC4899', '#10B981', '#F59E0B', '#3B82F6', '#EF4444');
         foreach ($prestadores as $key => $prestador) {
             $nome = explode(' ', $prestador['Prestador']['nome']);
@@ -58,7 +58,6 @@ class PrestadoresController extends AppController
             if ($this->Prestador->save($this->request->data)) {
                 return $this->redirect(array('action' => 'index'));
             } else {
-    
             }
         }
         $servicos = $this->Prestador->Servico->find('list');
@@ -109,7 +108,8 @@ class PrestadoresController extends AppController
     }
 
 
-    public function importar_xls() {
+    public function importar_xls()
+    {
         $this->autoRender = false;
         $this->response->type('json');
 
@@ -124,7 +124,7 @@ class PrestadoresController extends AppController
             $objPHPExcel = PHPExcel_IOFactory::load($caminhoArquivo);
             $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
 
-            array_shift($sheetData); 
+            array_shift($sheetData);
             $dadosParaSalvar = array();
             $this->loadModel('Servico');
 
@@ -137,6 +137,16 @@ class PrestadoresController extends AppController
                 $nomeServico = trim($linha['D']);
                 $valorStr    = trim($linha['E']);
 
+                // 💡 Processa o valor
+                if ($valorStr !== '') {
+                    $valorStr = preg_replace('/[^0-9,\.]/', '', $valorStr);
+                    $valorDecimal = str_replace(',', '.', $valorStr);
+                    $valorDecimal = (is_numeric($valorDecimal) && $valorDecimal !== '') ? $valorDecimal : null;
+                } else {
+                    $valorDecimal = null;
+                }
+
+                // 🍰 PROCESSAMENTO DO SERVIÇO E VALOR!
                 $servico_id = null;
                 if (!empty($nomeServico)) {
                     $servico = $this->Servico->find('first', [
@@ -145,21 +155,28 @@ class PrestadoresController extends AppController
                     ]);
                     if ($servico) {
                         $servico_id = $servico['Servico']['id'];
+                        // ATUALIZA VALOR (se desejar. Pode escolher se sempre ou só se não tiver valor)
+                        if ($valorDecimal !== null) {
+                            $this->Servico->id = $servico_id;
+                            $this->Servico->saveField('valor', $valorDecimal);
+                        }
                     } else {
+                        // Cria o serviço já com o valor
                         $this->Servico->create();
-                        $this->Servico->save(['nome' => $nomeServico]);
+                        $this->Servico->save([
+                            'nome' => $nomeServico,
+                            'valor' => $valorDecimal
+                        ]);
                         $servico_id = $this->Servico->id;
                     }
                 }
-
-                $valorDecimal = ($valorStr !== '') ? str_replace(',', '.', $valorStr) : null;
 
                 $dadosParaSalvar[] = [
                     'nome'          => $nomePrestador,
                     'email'         => $email,
                     'telefone'      => $telefone,
                     'servico_id'    => $servico_id,
-                    'valor_servico' => $valorDecimal,
+                    'valor_servico' => $valorDecimal
                 ];
             }
 
@@ -175,7 +192,6 @@ class PrestadoresController extends AppController
                 $this->response->statusCode(400);
                 $this->response->body(json_encode(['success' => false, 'message' => 'Erros de validação ao salvar os dados. Verifique o arquivo (e-mails duplicados, valor inválido, etc.).']));
             }
-
         } catch (Exception $e) {
             $this->response->statusCode(500);
             $this->response->body(json_encode(['success' => false, 'message' => 'Erro ao ler o arquivo: ' . $e->getMessage()]));

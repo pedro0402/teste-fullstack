@@ -74,11 +74,11 @@ class AgendamentosController extends AppController {
  */
 	public function edit($id = null) {
 		if (!$this->Agendamento->exists($id)) {
-			throw new NotFoundException(__('Invalid agendamento'));
+			throw new NotFoundException(__(''));
 		}
 		if ($this->request->is(array('post', 'put'))) {
 			if ($this->Agendamento->save($this->request->data)) {
-				$this->Flash->success(__('The agendamento has been saved.'));
+				$this->Flash->success(__(''));
 				return $this->redirect(array('action' => 'index'));
 			}
 		} else {
@@ -111,7 +111,7 @@ class AgendamentosController extends AppController {
  */
 	public function delete($id = null) {
 		if (!$this->Agendamento->exists($id)) {
-			throw new NotFoundException(__('Invalid agendamento'));
+			throw new NotFoundException(__(''));
 		}
 		$this->request->allowMethod('post', 'delete');
 		if ($this->Agendamento->delete($id)) {
