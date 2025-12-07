@@ -53,7 +53,10 @@ class ServicosController extends AppController
 		if ($this->request->is('post')) {
 			$this->Servico->create();
 			if ($this->Servico->save($this->request->data)) {
+				$this->Flash->success(__(''));
 				return $this->redirect(array('action' => 'index'));
+			} else {
+				$this->Flash->error(__(''));
 			}
 		}
 	}
@@ -72,8 +75,10 @@ class ServicosController extends AppController
 		}
 		if ($this->request->is(array('post', 'put'))) {
 			if ($this->Servico->save($this->request->data)) {
-	
+				$this->Flash->success(__(''));
 				return $this->redirect(array('action' => 'index'));
+			} else {
+				$this->Flash->error(__(''));
 			}
 		} else {
 			$options = array('conditions' => array('Servico.' . $this->Servico->primaryKey => $id));
@@ -94,7 +99,11 @@ class ServicosController extends AppController
 			throw new NotFoundException(__('Invalid servico'));
 		}
 		$this->request->allowMethod('post', 'delete');
-	
+		if ($this->Servico->delete($id)) {
+			$this->Flash->success(__(''));
+		} else {
+			$this->Flash->error(__(''));
+		}
 		return $this->redirect(array('action' => 'index'));
 	}
 

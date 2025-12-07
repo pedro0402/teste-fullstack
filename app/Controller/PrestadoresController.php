@@ -56,10 +56,9 @@ class PrestadoresController extends AppController
             }
             $this->Prestador->create();
             if ($this->Prestador->save($this->request->data)) {
-                $this->Flash->success(__('O prestador foi salvo com sucesso.'));
                 return $this->redirect(array('action' => 'index'));
             } else {
-                $this->Flash->error(__('O prestador não pôde ser salvo. Por favor, tente novamente.'));
+    
             }
         }
         $servicos = $this->Prestador->Servico->find('list');
@@ -77,10 +76,10 @@ class PrestadoresController extends AppController
                 $this->request->data['Prestador']['valor_servico'] = str_replace(',', '.', $this->request->data['Prestador']['valor_servico']);
             }
             if ($this->Prestador->save($this->request->data)) {
-                $this->Flash->success(__('O prestador foi salvo com sucesso.'));
+                $this->Flash->success(__(''));
                 return $this->redirect(array('action' => 'index'));
             } else {
-                $this->Flash->error(__('O prestador não pôde ser salvo. Por favor, tente novamente.'));
+                $this->Flash->error(__(''));
             }
         } else {
             $this->request->data = $this->Prestador->findById($id);
@@ -102,9 +101,9 @@ class PrestadoresController extends AppController
         }
         $this->request->allowMethod('post', 'delete');
         if ($this->Prestador->delete($id)) {
-            $this->Flash->success(__('O prestador foi excluído.'));
+            $this->Flash->success(__(''));
         } else {
-            $this->Flash->error(__('O prestador não pôde ser excluído. Por favor, tente novamente.'));
+            $this->Flash->error(__(''));
         }
         return $this->redirect(array('action' => 'index'));
     }
