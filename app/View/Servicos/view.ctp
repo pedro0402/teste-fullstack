@@ -9,6 +9,11 @@
 			</h1>
 			<p>Veja os dados do serviço e prestadores associados.</p>
 		</div>
+		<?php echo $this->Html->link(
+			'<i class="fas fa-home"></i> Home',
+			array('controller' => 'prestadores', 'action' => 'index'),
+			array('class' => 'btn btn-secondary', 'escape' => false)
+		); ?>
 		<div class="header-right">
 			<?php echo $this->Html->link(
 				'<i class="fas fa-arrow-left"></i> Voltar para Serviços',
