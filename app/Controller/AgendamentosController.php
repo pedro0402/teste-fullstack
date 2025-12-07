@@ -34,7 +34,7 @@ class AgendamentosController extends AppController {
  */
 	public function view($id = null) {
 		if (!$this->Agendamento->exists($id)) {
-			throw new NotFoundException(__('Invalid agendamento'));
+			throw new NotFoundException(__(''));
 		}
 		$options = array('conditions' => array('Agendamento.' . $this->Agendamento->primaryKey => $id));
 		$this->set('agendamento', $this->Agendamento->find('first', $options));
@@ -49,7 +49,7 @@ class AgendamentosController extends AppController {
 		if ($this->request->is('post')) {
 			$this->Agendamento->create();
 			if ($this->Agendamento->save($this->request->data)) {
-				$this->Flash->success(__('The agendamento has been saved.'));
+				$this->Flash->success(__(''));
 				return $this->redirect(array('action' => 'index'));
 			}
 		}
