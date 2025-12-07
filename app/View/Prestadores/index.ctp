@@ -166,10 +166,10 @@ $(document).ready(function() {
         }
     });
 
-    // Clique para abrir arquivo apenas na área de upload
+    // Clique para abrir arquivo apenas na área de upload, ignorando o input e o botão de remover
     uploadArea.click(function(e) {
-        // se clicar no botão de remover, não abre o seletor
-        if ($(e.target).closest('.remove-file').length) return;
+        if ($(e.target).is(fileInput)) return; // evita recursão
+        if ($(e.target).closest('.remove-file').length) return; // não abre ao clicar em remover
         fileInput.click();
     });
 
