@@ -16,7 +16,7 @@ class Agendamento extends AppModel
         'nome_cliente' => array(
             'notBlank' => array('rule' => array('notBlank')),
         ),
-        // ### PARTE 1: MODIFICAR A REGRA AQUI ###
+
         'data_hora_inicio' => array(
             'custom_format' => array(
                 // A regra agora chama nossa própria função, 'validateDateTimeFormat'
@@ -45,33 +45,24 @@ class Agendamento extends AppModel
         'Servico' => array('className' => 'Servico', 'foreignKey' => 'servico_id')
     );
 
-    // ### PARTE 2: ADICIONAR A NOSSA FUNÇÃO DE VALIDAÇÃO ###
     public function validateDateTimeFormat($check)
     {
-        // Pega o valor do campo (ex: '04/12/2025 15:30')
         $dateTimeString = array_values($check)[0];
 
-        // Usa a mesma lógica do beforeSave para TENTAR criar um objeto DateTime.
-        // Se a data for inválida (ex: 32/12/2025), createFromFormat retorna false.
         $d = DateTime::createFromFormat('d/m/Y H:i', $dateTimeString);
 
-        // A validação passa se:
-        // 1. O objeto foi criado com sucesso (não é false).
-        // 2. A string que o objeto gerou de volta é a mesma que entrou. Isso evita datas como "31/02/2025" que o PHP às vezes "corrige" para Março.
         return $d && $d->format('d/m/Y H:i') === $dateTimeString;
     }
 
     public function beforeSave($options = array())
     {
-        // Lista de campos que precisam de conversão de formato
+
         $camposDeData = array('data_hora_inicio', 'data_hora_fim');
 
         foreach ($camposDeData as $campo) {
             if (!empty($this->data[$this->alias][$campo])) {
                 $dataHoraDoFormulario = $this->data[$this->alias][$campo];
 
-                // Só converte se não estiver no formato do banco
-                // (evita reconverter ao editar sem mudar a data)
                 if (strpos($dataHoraDoFormulario, '/') !== false) {
                     $dataObj = DateTime::createFromFormat('d/m/Y H:i', $dataHoraDoFormulario);
                     if ($dataObj) {

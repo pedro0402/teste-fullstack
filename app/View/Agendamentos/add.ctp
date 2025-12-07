@@ -57,7 +57,10 @@
 		<div class="form-group">
 			<?php echo $this->Form->input('telefone_cliente', [
 				'label' => 'Telefone do Cliente',
-				'class' => 'form-control'
+				'class' => 'form-control',
+				'placeholder' => '(82) 99653-5106',
+				'maxlength' => 15,
+				'id' => 'phoneNumber'
 			]); ?>
 		</div>
 		<div class="form-group">
